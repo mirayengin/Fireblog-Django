@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import MyUser
+from .models import Profile
+from django.contrib.auth.models import User
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from dj_rest_auth.serializers import TokenSerializer
@@ -15,12 +16,12 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         write_only=True,
         validators=[validate_password]
     )
-    # email = serializers.CharField(
-    #     required=True,
-    #     validators=[UniqueValidator]
-    # )
+    email = serializers.CharField(
+        required=True,
+        validators=[UniqueValidator]
+    )
     class Meta:
-        model = MyUser
+        model = User
         fields = ("username", "email", "first_name", "last_name", "role", "password", "password2" )
         
     def validate(self, data):
@@ -37,14 +38,14 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("password2")
         password = validated_data.get("password")
-        user = MyUser.objects.create(**validated_data)
+        user = User.objects.create(**validated_data)
         user.set_password(password)
         user.save()
         return user
     
 class UserTokenSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MyUser
+        model = User
         fields = ("id", "username", "email")
         
 class CustomTokenSerializer(TokenSerializer):
@@ -54,8 +55,18 @@ class CustomTokenSerializer(TokenSerializer):
         fields = ("user", "key")
 
         
-        
+class ProfileSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    user_id = serializers.IntegerField(required=False)
+    class Meta:
+        model = Profile
+        fields = ("id", "user", "user_id", "bio", "avatar", "favorites", "card", "sell_product")
 
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        instance.user_id = self.context['request'].user.id
+        instance.save()
+        return instance
 
 
 
