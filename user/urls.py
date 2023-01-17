@@ -1,10 +1,7 @@
-
-from django.urls import path
-from .views import RegisterUserView
-
+from django.urls import path, include
+from .views import RegisterView
 
 urlpatterns = [
-
-    path('register/',RegisterUserView.as_view() ),
-    # path('product/', ),
+    path('auth/', include('dj_rest_auth.urls')),
+    path('register/', RegisterView.as_view()),
 ]
