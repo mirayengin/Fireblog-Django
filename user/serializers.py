@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from dj_rest_auth.serializers import TokenSerializer
+from products.serializers import ProductSerializer
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
@@ -48,9 +49,12 @@ class CustomTokenSerializer(TokenSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
     user_id = serializers.IntegerField(required=False)
+    favorites = ProductSerializer(many=True, read_only=True)
+    cards = ProductSerializer(many=True, read_only=True)
+
     class Meta:
         model = Profile
-        fields = ("id", "user", "user_id", "bio", "avatar", "favorites", "cards", "sell_products")
+        fields = ("id", "user", "user_id", "bio", "avatar", "favorites", "cards", "favorites")
 
     def update(self, instance, validated_data):
         instance = super().update(instance, validated_data)

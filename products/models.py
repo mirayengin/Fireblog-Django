@@ -15,10 +15,14 @@ class Product(models.Model):
     updated_date =models.DateField(auto_now=True)
     image = models.ImageField(upload_to="products", default="avatar.png")
 
-class Favorites(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name="favorites", on_delete=models.CASCADE)
 
-class Card(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name="card", on_delete=models.CASCADE)
+    def __str__(self):
+        return f"{self.name} {self.brand}"
+
+# class Favorites(models.Model):
+#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+#     user = models.ForeignKey(User, related_name="favorites", on_delete=models.CASCADE)
+
+# class Card(models.Model):
+#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+#     user = models.ForeignKey(User, related_name="card", on_delete=models.CASCADE)
