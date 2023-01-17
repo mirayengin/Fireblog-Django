@@ -22,7 +22,7 @@ ROLE = {
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    role = models.PositiveSmallIntegerField(choices=ROLE)
+    role = models.PositiveSmallIntegerField(choices=ROLE, blank=True, null=True)
     favorites = models.ForeignKey(Favorites, on_delete=models.CASCADE, blank=True, null=True)
     cards = models.ForeignKey(Card, on_delete=models.CASCADE, blank=True, null=True)
     sell_products = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
