@@ -5,6 +5,7 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from dj_rest_auth.serializers import TokenSerializer
 from products.serializers import ProductSerializer
+from products.models import Product
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
@@ -51,16 +52,23 @@ class ProfileSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(required=False)
     favorites = ProductSerializer(many=True, read_only=True)
     cards = ProductSerializer(many=True, read_only=True)
+    sell_products = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
-        fields = ("id", "user", "user_id", "bio", "avatar", "favorites", "cards", "favorites")
+        fields = ("id", "user", "user_id", "bio", "avatar", "favorites", "cards", "favorites", "sell_products")
 
     def update(self, instance, validated_data):
         instance = super().update(instance, validated_data)
         instance.user_id = self.context['request'].user.id
         instance.save()
         return instance
+    
+    def get_sell_products(self, instance):
+        products = Product.objects.all()
+        # product = Product.objects.get(seller_id=instance.id)
+        product = products.filter(seller_id=instance.user_id)
+        return ProductSerializer(product, many=True).data
 
 
 # class MyUserSerializer(serializers.ModelSerializer):
